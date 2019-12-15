@@ -5,13 +5,10 @@ import com.arturskowronski.aoc2019.utils.Utils
 
 private fun getOpcodes() = Utils().getLine("/day5/input").split(",").mapNotNull { it.toIntOrNull() }.toMutableList()
 
-private fun task1(): Int {
+private fun IntcodeComputer(input: Int, opcodes: MutableList<Int>): Int {
 
     var i = 0
     var drop = 0
-    var opcodes = getOpcodes()
-    val input = 5
-
     while (true) {
         val operation = getOperation(opcodes.drop(drop))
         if (operation != null) {
@@ -29,8 +26,7 @@ private fun task1(): Int {
                     drop += 2
                 }
                 4 -> {
-                    println(operation.input1!!.getValue(opcodes))
-                    drop += 2
+                    return operation.input1!!.getValue(opcodes)
                 }
                 5 -> {
                     if(operation.input1!!.getValue(opcodes) != 0) {
@@ -109,6 +105,6 @@ data class Parameter(val value: Int?, val mode: Char?){
 data class Opcode2(val operation: Int, val input1: Parameter?, val input2: Parameter?, val output: Parameter?)
 
 fun main() {
-    task1()
+    println(IntcodeComputer(5, getOpcodes()))
 }
 
