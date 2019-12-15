@@ -5,10 +5,12 @@ import com.arturskowronski.aoc2019.utils.Utils
 
 private fun getOpcodes() = Utils().getLine("/day5/input").split(",").mapNotNull { it.toIntOrNull() }.toMutableList()
 
-private fun IntcodeComputer(input: Int, opcodes: MutableList<Int>): Int {
+fun IntcodeComputer(input: List<Int>, opcodes: MutableList<Int>): Int {
 
     var i = 0
     var drop = 0
+    var inputToConsume = 0
+    var lastResult: Int? = null
     while (true) {
         val operation = getOperation(opcodes.drop(drop))
         if (operation != null) {
@@ -22,11 +24,18 @@ private fun IntcodeComputer(input: Int, opcodes: MutableList<Int>): Int {
                     drop += 4
                 }
                 3 -> {
-                    operation.input1!!.setValue(input, opcodes)
+                    if(lastResult != null) {
+                        operation.input1!!.setValue(lastResult, opcodes)
+                    } else {
+                        operation.input1!!.setValue(input[inputToConsume], opcodes)
+                    }
                     drop += 2
+                    inputToConsume += 1
                 }
                 4 -> {
-                    return operation.input1!!.getValue(opcodes)
+                    lastResult = operation.input1!!.getValue(opcodes)
+                    drop += 2
+//                    println(operation.input1!!.getValue(opcodes))
                 }
                 5 -> {
                     if(operation.input1!!.getValue(opcodes) != 0) {
@@ -58,13 +67,18 @@ private fun IntcodeComputer(input: Int, opcodes: MutableList<Int>): Int {
                     }
                     drop +=4
                 }
+                else -> {
+                    println(lastResult)
+                }
             }
             i++
         } else {
+            println(lastResult)
+
             break
         }
     }
-    return opcodes[0]
+    return lastResult!!
 }
 
 private fun getOperation(opcodes: List<Int>): Opcode2? {
@@ -105,6 +119,6 @@ data class Parameter(val value: Int?, val mode: Char?){
 data class Opcode2(val operation: Int, val input1: Parameter?, val input2: Parameter?, val output: Parameter?)
 
 fun main() {
-    println(IntcodeComputer(5, getOpcodes()))
+    println(IntcodeComputer(listOf(5), getOpcodes()))
 }
 
